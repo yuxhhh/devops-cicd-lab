@@ -12,10 +12,18 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Build Docker Image
-        run: docker build -t devops-lab-app ./app
+      - name: Start Minikube Cluster
+        uses: medyagh/setup-minikube@master
+
+      - name: Build Docker Image inside Minikube
+        run: |
+          eval $(minikube -p minikube docker-env)
+          docker build -t devops-lab-app ./app
 
       - name: Deploy to Kubernetes
         run: |
           kubectl apply -f k8s/deployment.yml
           kubectl apply -f k8s/service.yml
+          kubectl get pods
+          kubectl get services
+
